@@ -182,8 +182,11 @@ public $negotiateLocale = false;        // biar nggak ke-override dari browser
      *
      * @var array<string, string>
      */
-    public array $proxyIPs = ['*'];
-
+    public array $proxyIPs = [
+        '127.0.0.1' => 'X-Forwarded-For',
+        '::1'       => 'X-Forwarded-For',
+    ];
+    
     /**
      * --------------------------------------------------------------------------
      * Content Security Policy

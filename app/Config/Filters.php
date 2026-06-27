@@ -74,17 +74,18 @@ class Filters extends BaseFilters
      *     after: array<string, array{except: list<string>|string}>|list<string>
      * }
      */
-  public array $globals = [
-    'before' => [
-        'csrf' => [
-            'except' => [
-                'admin/login',
-                'api/*'
-            ]
+    public array $globals = [
+        'before' => [
+            'csrf' => [
+                'except' => [
+                    'admin/login',
+                    'teori/login',
+                    'api/*'
+                ]
+            ],
         ],
-    ],
-    'after'  => ['toolbar'],
-];
+        'after'  => ['toolbar'],
+    ];
 
     /**
      * List of filter aliases that works on a

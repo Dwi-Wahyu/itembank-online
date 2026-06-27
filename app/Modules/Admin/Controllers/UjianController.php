@@ -260,7 +260,7 @@ public function teoriUpdate($id)
     return $this->response->setJSON(['status'=>'ok','message'=>'Perubahan tersimpan.']);
 }
 
- // ===== DETAIL =====
+    // ===== DETAIL =====
     public function teoriDetail(int $id)
     {
         $db = $this->db;

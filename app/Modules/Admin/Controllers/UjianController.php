@@ -53,7 +53,7 @@ class UjianController extends BaseController
     public function teori()
     {
         $r     = $this->request;
-        $tab   = $r->getGet('tab') ?: 'mendatang';     // review|mendatang|berlangsung|selesai
+        $tab   = $r->getGet('tab') ?: 'berlangsung';     // review|mendatang|berlangsung|selesai
         $page  = max(1, (int)$r->getGet('page'));
         $per   = 20;
         $today = date('Y-m-d');
@@ -293,7 +293,83 @@ public function teoriUpdate($id)
         ]);
     }
 
-    // Modules/Admin/Controllers/UjianController.php (cuplikan)
+    public function exportOffline($id_ujian)
+    {
+        $id_ujian = (int) $id_ujian;
+
+        // a. Ambil data ujian berdasarkan $id_ujian
+        $buatTeoriModel = new \Modules\Teori\Models\BuatTeoriModel();
+        $uji = $buatTeoriModel->find($id_ujian);
+        if (!$uji) {
+            return redirect()->back()->with('error', 'Ujian tidak ditemukan');
+        }
+
+        // b. Ambil data daftar soal yang terhubung dengan ujian ini (id_paket = id_ujian)
+        $ujianTeoriModel = new \Modules\Teori\Models\UjianTeoriModel();
+        $soalList = $ujianTeoriModel->where('id_paket', $id_ujian)->findAll();
+
+        // c. Ambil data daftar peserta yang di-assign ke ujian ini (kode = uji.kode)
+        $adminCbtModel = new \Modules\Teori\Models\AdminCbtModel();
+        $pesertaList = $adminCbtModel->where('kode', $uji['kode'])->findAll();
+
+        // Ambil data mahasiswa
+        $mahasiswaIds = array_column($pesertaList, 'id_mahasiswa');
+        $mahasiswaModel = new \Modules\Teori\Models\MahasiswaModel();
+        $mahasiswaList = !empty($mahasiswaIds) ? $mahasiswaModel->whereIn('id', $mahasiswaIds)->findAll() : [];
+
+        // d. Susun data tersebut menjadi satu array/object utuh, lalu konversi ke string JSON (data.json)
+        $exportData = [
+            'uji'       => $uji,
+            'soal'      => $soalList,
+            'peserta'   => $pesertaList,
+            'mahasiswa' => $mahasiswaList,
+        ];
+        $jsonData = json_encode($exportData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        // e. Gunakan class ZipArchive bawaan PHP. Buat file zip sementara di folder writable/uploads/
+        $zip = new \ZipArchive();
+        $zipDir = WRITEPATH . 'uploads/';
+        if (!is_dir($zipDir)) {
+            mkdir($zipDir, 0777, true);
+        }
+        $zipFilename = 'export_ujian_' . $uji['kode'] . '_' . date('Ymd_His') . '.zip';
+        $zipFilePath = $zipDir . $zipFilename;
+
+        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            return redirect()->back()->with('error', 'Gagal membuat file ZIP');
+        }
+
+        // f. Masukkan data.json ke dalam file zip tersebut
+        $zip->addFromString('data.json', $jsonData);
+
+        // g. Looping data soal: jika ada file gambar/media pada soal (biasanya di path public/uploads/soal_teori/), tambahkan file tersebut ke dalam zip dengan struktur folder yang sesuai (misal uploads/soal_teori/nama_file.jpg)
+        foreach ($soalList as $soal) {
+            if (!empty($soal['file'])) {
+                $mediaFilePath = FCPATH . 'uploads/soal_teori/' . $soal['file'];
+                if (is_file($mediaFilePath)) {
+                    $zip->addFile($mediaFilePath, 'uploads/soal_teori/' . $soal['file']);
+                }
+            }
+        }
+
+        $zip->close();
+
+        // h. Kembalikan response download file zip tersebut ke user, lalu hapus file zip sementara dari disk.
+        if (is_file($zipFilePath)) {
+            if (ob_get_level()) {
+                ob_end_clean();
+            }
+            register_shutdown_function(function() use ($zipFilePath) {
+                if (is_file($zipFilePath)) {
+                    unlink($zipFilePath);
+                }
+            });
+            return $this->response->download($zipFilePath, null);
+        } else {
+            return redirect()->back()->with('error', 'File ZIP tidak ditemukan setelah pembuatan');
+        }
+    }
+
 
 public function praktek()
 {

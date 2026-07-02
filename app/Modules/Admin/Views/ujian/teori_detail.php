@@ -36,6 +36,11 @@ $min = (int)($uji['nilai_minimum'] ?? $uji['nilai_minimum'] ?? 0);
       <li class="breadcrumb-item active" aria-current="page"><?= esc($uji['nama'])." - ".esc($uji['kode']) ?></li>
     </ol>
   </nav>
+  <div>
+    <a href="<?= site_url('admin/ujian/teori/export-offline/' . $uji['id']) ?>" class="btn btn-warning btn-sm">
+      <i class="bi bi-download me-1"></i> Export Offline (ZIP)
+    </a>
+  </div>
 </div>
 
 <div class="card mb-3">

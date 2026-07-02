@@ -79,6 +79,7 @@ $routes->group('admin', ['namespace' => 'Modules\Admin\Controllers'], static fun
         $routes->get('ujian/teori/newcode', 'UjianController::newKode');
          // DETAIL ujian teori
         $routes->get ('ujian/teori/detail/(:num)',           'UjianController::teoriDetail/$1');
+        $routes->get ('ujian/teori/export-offline/(:num)',   'UjianController::exportOffline/$1');
 
         // Fitur Pilih Soal Massal
         $routes->get ('ujian/teori/soal-list/(:num)',        'UjianController::soalList/$1');

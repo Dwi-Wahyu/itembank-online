@@ -370,11 +370,103 @@ public function teoriUpdate($id)
         }
     }
 
+    public function exportOfflinePraktek($id_ujian)
+    {
+        $id_ujian = (int) $id_ujian;
+        $db = $this->db;
+
+        // a. Ambil data ujian praktek (osce) berdasarkan $id_ujian
+        $uji = $db->table('osce')->where('id', $id_ujian)->get()->getRowArray();
+        if (!$uji) {
+            return redirect()->back()->with('error', 'Ujian praktek tidak ditemukan');
+        }
+
+        // b. Ambil data station (osce_soal)
+        $stations = $db->table('osce_soal')->where('osce_id', $id_ujian)->get()->getResultArray();
+
+        // c. Ambil data soal praktek (ujian_praktek)
+        $soalIds = array_filter(array_column($stations, 'soal_id'));
+        $soalPraktekList = !empty($soalIds) ? $db->table('ujian_praktek')->whereIn('id', $soalIds)->get()->getResultArray() : [];
+
+        // d. Ambil data aspek (rubrik penilaian)
+        $aspekList = !empty($soalIds) ? $db->table('aspek')->whereIn('soal_id', $soalIds)->orderBy('id', 'ASC')->get()->getResultArray() : [];
+
+        // e. Ambil data peserta (admin_cbt)
+        $pesertaList = $db->table('admin_cbt')->where('kode', $uji['kode'])->get()->getResultArray();
+
+        // f. Ambil data mahasiswa
+        $mahasiswaIds = array_filter(array_column($pesertaList, 'id_mahasiswa'));
+        $mahasiswaList = !empty($mahasiswaIds) ? $db->table('mahasiswa')->whereIn('id', $mahasiswaIds)->get()->getResultArray() : [];
+
+        // g. Susun data tersebut menjadi satu array/object utuh, lalu konversi ke string JSON (data.json)
+        $exportData = [
+            'uji'          => $uji,
+            'stations'     => $stations,
+            'soal_praktek' => $soalPraktekList,
+            'aspek'        => $aspekList,
+            'peserta'      => $pesertaList,
+            'mahasiswa'    => $mahasiswaList,
+        ];
+        $jsonData = json_encode($exportData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        // h. Buat file zip sementara di folder writable/uploads/
+        $zip = new \ZipArchive();
+        $zipDir = WRITEPATH . 'uploads/';
+        if (!is_dir($zipDir)) {
+            mkdir($zipDir, 0777, true);
+        }
+        $zipFilename = 'export_ujian_praktek_' . $uji['kode'] . '_' . date('Ymd_His') . '.zip';
+        $zipFilePath = $zipDir . $zipFilename;
+
+        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            return redirect()->back()->with('error', 'Gagal membuat file ZIP');
+        }
+
+        // i. Masukkan data.json ke dalam file zip tersebut
+        $zip->addFromString('data.json', $jsonData);
+
+        // j. Looping media files dari soal_praktek
+        foreach ($soalPraktekList as $soal) {
+            if (!empty($soal['file'])) {
+                $files = json_decode((string)$soal['file'], true);
+                if (!is_array($files)) {
+                    $files = [trim((string)$soal['file'])];
+                }
+                foreach ($files as $fileName) {
+                    $fileName = trim((string)$fileName);
+                    if ($fileName === '') continue;
+                    $mediaFilePath = FCPATH . 'uploads/soal_praktek/' . $fileName;
+                    if (is_file($mediaFilePath)) {
+                        $zip->addFile($mediaFilePath, 'uploads/soal_praktek/' . $fileName);
+                    }
+                }
+            }
+        }
+
+        $zip->close();
+
+        // k. Kembalikan response download file zip tersebut ke user, lalu hapus file zip sementara dari disk.
+        if (is_file($zipFilePath)) {
+            if (ob_get_level()) {
+                ob_end_clean();
+            }
+            register_shutdown_function(function() use ($zipFilePath) {
+                if (is_file($zipFilePath)) {
+                    unlink($zipFilePath);
+                }
+            });
+            return $this->response->download($zipFilePath, null);
+        } else {
+            return redirect()->back()->with('error', 'File ZIP tidak ditemukan setelah pembuatan');
+        }
+    }
+
+
 
 public function praktek()
 {
     $r     = $this->request;
-    $tab   = $r->getGet('tab') ?: 'mendatang';     // review|mendatang|berlangsung|selesai
+    $tab   = $r->getGet('tab') ?: 'berlangsung';     // review|mendatang|berlangsung|selesai
     $page  = max(1, (int)$r->getGet('page'));
     $per   = 20;
     $today = date('Y-m-d');

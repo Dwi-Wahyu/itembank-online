@@ -2,7 +2,7 @@
 $this->extend('\Modules\Admin\Views\layouts\admin');
 $this->section('content');
 
-$tab   = $tab ?? 'mendatang';
+$tab   = $tab ?? 'berlangsung';
 $f     = $filters ?? [];
 $q     = $f['q'] ?? '';
 $depId = $f['depId'] ?? '';
@@ -19,11 +19,6 @@ function qurl($p=[]){ return current_url().'?'.http_build_query(array_merge($_GE
 </div>
 
 <ul class="nav nav-pills mb-3">
-  
-  <li class="nav-item">
-    <a class="nav-link js-tab <?= $tab==='mendatang'?'active':'' ?>"
-       data-tab="mendatang" href="<?= qurl(['tab'=>'mendatang','page'=>1]) ?>">Mendatang</a>
-  </li>
   <li class="nav-item">
     <a class="nav-link js-tab <?= $tab==='berlangsung'?'active':'' ?>"
        data-tab="berlangsung" href="<?= qurl(['tab'=>'berlangsung','page'=>1]) ?>">Berlangsung</a>
@@ -207,7 +202,7 @@ function qurl($p=[]){ return current_url().'?'.http_build_query(array_merge($_GE
     return u.searchParams.get(key);
   }
   function setActiveTabFromUrl(url){
-    const t = getParam(url, 'tab') || 'mendatang';
+    const t = getParam(url, 'tab') || 'berlangsung';
     $('.nav-pills .nav-link').removeClass('active')
       .filter(`[data-tab="${t}"]`).addClass('active');
     $('#filterForm input[name="tab"]').val(t); // sinkron ke hidden input filter

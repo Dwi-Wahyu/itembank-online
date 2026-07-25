@@ -11,6 +11,11 @@ $station_id=(int)$uji['id']
       <li class="breadcrumb-item active" aria-current="page"><?= esc($uji['nama_ujian']) ?></li>
     </ol>
   </nav>
+  <div>
+    <a href="<?= site_url('admin/ujian/praktek/export-offline/' . $uji['id']) ?>" class="btn btn-warning btn-sm">
+      <i class="bi bi-download me-1"></i> Export Offline (ZIP)
+    </a>
+  </div>
 </div>
 
 <div class="card mb-3">

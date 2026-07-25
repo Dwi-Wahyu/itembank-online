@@ -60,9 +60,9 @@ $routes->group('admin', ['namespace' => 'Modules\Admin\Controllers'], static fun
     $routes->post('login', 'AuthController::login');
     $routes->get('logout', 'AuthController::logout');
     $routes->get('options/departemen', 'OptionsController::departemen'); 
-    // 0–4: dashboard + soal + ujian
+    // 0–4, 6: dashboard + soal + ujian
     $routes->get('ujian/teori/laporan/(:segment)', 'UjianTeoriReport::laporan/$1');
-    $routes->group('', ['filter' => 'adminauth:0,1,2,3,4'], static function ($routes) {
+    $routes->group('', ['filter' => 'adminauth:0,1,2,3,4,6'], static function ($routes) {
         $routes->get('dashboard',            'DashboardController::index');
 
         $routes->get('soal/format',          'SoalController::format');   // soal_format
@@ -286,6 +286,15 @@ $routes->group('', ['filter' => 'adminauth', 'namespace' => 'Modules\Admin\Contr
             $routes->post('delete/(:num)',    'UsersReviewerController::delete/$1');
             $routes->post('reset/(:num)',     'UsersReviewerController::resetPassword/$1');
             $routes->get('export',            'UsersReviewerController::export');
+        });
+
+        $routes->group('pengguna-operator', static function($routes){
+            $routes->get('/',                 'UsersOperatorController::index');
+            $routes->get('get/(:num)',        'UsersOperatorController::get/$1');
+            $routes->post('save',             'UsersOperatorController::save');
+            $routes->post('delete/(:num)',    'UsersOperatorController::delete/$1');
+            $routes->post('reset/(:num)',     'UsersOperatorController::resetPassword/$1');
+            $routes->get('export',            'UsersOperatorController::export');
         });
     });
 });

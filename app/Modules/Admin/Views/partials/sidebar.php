@@ -4,7 +4,7 @@ use Modules\Auth\Libraries\Auth;
 $u        = Auth::user();
 $role     = (int)($u['role_id'] ?? $u['id_role'] ?? -1);
 $canSuper = ($role === 0);                 // superadmin
-$canStd   = in_array($role, [1,2,3,4], true);
+$canStd   = in_array($role, [1,2,3,4,6], true);
 
 $isActive = fn(string $k) => (($menuActive ?? '') === $k) ? 'active' : '';
 $open     = fn(array $keys)  => in_array($menuActive ?? '', $keys, true) ? 'show'  : '';
@@ -99,16 +99,19 @@ $aria     = fn(array $keys)  => in_array($menuActive ?? '', $keys, true) ? 'true
       
       <!-- PENGGUNA -->
       <a class="menu-item menu-parent" data-bs-toggle="collapse" href="#navPengguna" role="button"
-         aria-expanded="<?= $aria(['pengguna-dosen','pengguna-reviewer','pengguna-manajemen','pengguna-administrator']) ?>" aria-controls="navPengguna">
+         aria-expanded="<?= $aria(['pengguna-dosen','pengguna-reviewer','pengguna-operator','pengguna-manajemen','pengguna-administrator']) ?>" aria-controls="navPengguna">
         <i class="bi bi-people-fill"></i><span>Pengguna</span>
         <i class="bi bi-chevron-down ms-auto caret"></i>
       </a>
-      <div class="collapse submenu <?= $open(['pengguna-dosen','pengguna-reviewer','pengguna-manajemen','pengguna-administrator']) ?>" id="navPengguna" data-bs-parent="#sidebarMenu">
+      <div class="collapse submenu <?= $open(['pengguna-dosen','pengguna-reviewer','pengguna-operator','pengguna-manajemen','pengguna-administrator']) ?>" id="navPengguna" data-bs-parent="#sidebarMenu">
         <a class="submenu-item <?= $isActive('pengguna-dosen')  ?>" href="<?= site_url('admin/master/pengguna-dosen')  ?>">
           <span>Dosen</span>
         </a>
         <a class="submenu-item <?= $isActive('pengguna-reviewer')  ?>" href="<?= site_url('admin/master/pengguna-reviewer')  ?>">
           <span>Reviewer</span>
+        </a>
+        <a class="submenu-item <?= $isActive('pengguna-operator')  ?>" href="<?= site_url('admin/master/pengguna-operator')  ?>">
+          <span>Operator Ujian</span>
         </a>
         <a class="submenu-item <?= $isActive('pengguna-manajemen')  ?>" href="<?= site_url('admin/master/pengguna-manajemen')  ?>">
           <span>Manajemen</span>

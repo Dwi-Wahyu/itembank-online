@@ -15,12 +15,14 @@ $f = $filters ?? []; ?>
         <i class="bi bi-plus-circle me-1"></i> Tambah Soal
       </a>
     <?php endif; ?>
-    <a href="<?= site_url('admin/soal/teori/import/template') ?>" class="btn btn-outline-secondary">
-      <i class="bi bi-download me-1"></i> Template Excel
-    </a>
-   <button type="button" class="btn btn-outline-success" id="btnOpenImport">
-  <i class="bi bi-upload me-1"></i> Import Excel
-</button>
+    <?php if (($me['role_id'] ?? -1) != 6) : ?>
+      <a href="<?= site_url('admin/soal/teori/import/template') ?>" class="btn btn-outline-secondary">
+        <i class="bi bi-download me-1"></i> Template Excel
+      </a>
+      <button type="button" class="btn btn-outline-success" id="btnOpenImport">
+        <i class="bi bi-upload me-1"></i> Import Excel
+      </button>
+    <?php endif; ?>
 
     <!-- <a href="<?= site_url('admin/soal/teori/export/zip') . (
       ($g = service('request')->getGet()) ? ('?' . http_build_query($g)) : ''

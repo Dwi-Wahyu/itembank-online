@@ -36,11 +36,13 @@ function qurl_part($p=[]){ return current_url().'?'.http_build_query(array_merge
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                <li>
-                  <a class="dropdown-item" title="Review" href="<?= site_url('admin/soal/teori/review/'.$r['id']) ?>">
-                    <i class="bi bi-clipboard-check me-2"></i> Review
-                  </a>
-                </li>
+                <?php if (($me['role_id'] ?? -1) != 6): ?>
+                  <li>
+                    <a class="dropdown-item" title="Review" href="<?= site_url('admin/soal/teori/review/'.$r['id']) ?>">
+                      <i class="bi bi-clipboard-check me-2"></i> Review
+                    </a>
+                  </li>
+                <?php endif; ?>
                 <?php if ($me['role_id']==0 || $me['role_id']==1): ?>
                   <li>
                     <a class="dropdown-item" title="Edit" href="<?= site_url('admin/soal/teori/edit/'.$r['id']) ?>">

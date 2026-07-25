@@ -149,7 +149,7 @@ abstract class UsersBaseController extends BaseController
     $rows  = $this->M->listByRole($this->ROLE_ID, $q);
 
     // mapping role teks
-    $roleMap = [0=>'Administrator', 1=>'Dosen', 2=>'Manajemen', 4=>'Reviewer'];
+    $roleMap = [0=>'Administrator', 1=>'Dosen', 2=>'Manajemen', 4=>'Reviewer', 6=>'Operator Ujian'];
     $roleTxt = $roleMap[$this->ROLE_ID] ?? ('Role-'.$this->ROLE_ID);
 
     // siapkan data kolom (jangan export password)

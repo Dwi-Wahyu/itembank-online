@@ -87,8 +87,16 @@ public function before(RequestInterface $request, $arguments = null)
             'admin/soal/praktek/add',
             'admin/soal/praktek/simpan',
             'admin/soal/praktek/edit',
-            'admin/praktek/aspek',   // kelola aspek penilaian OSCE, bukan bagian dari lihat soal
-            'admin/osce-soal',       // modul CRUD soal praktek OSCE (bukan cakupan "lihat soal" via bank soal)
+            'admin/praktek/aspek/delete', 
+            'admin/aspek/add',
+            'admin/aspek/create',
+            'admin/aspek/edit',
+            'admin/aspek/update',
+            'admin/aspek/delete',
+            'admin/osce-soal/create',
+            'admin/osce-soal/update',
+            'admin/osce-soal/delete',
+            'admin/osce-soal/delete-multiple',
             'admin/master',          // master data & manajemen pengguna lain
         ];
         foreach ($deniedOperatorPatterns as $p) {
@@ -107,6 +115,9 @@ public function before(RequestInterface $request, $arguments = null)
             'admin/soal/praktek',// hanya GET (lihat) — aksi tulis sudah diblokir denylist di atas
             'admin/soal/format',
             'admin/options',     // endpoint dropdown pendukung form (departemen, dsb.)
+            'admin/osce-soal',
+            'admin/praktek/aspek',
+            'admin/aspek',
         ];
 
         $isAllowed = false;

@@ -13,7 +13,9 @@ function qurl_part($p=[]){ return current_url().'?'.http_build_query(array_merge
           <th class="col-vignette">Vignette</th>
           <th class="col-tanya">Pertanyaan</th>
           <th class="col-status">Status</th>
-          <th style="width:80px" class="text-center">Opsi</th>
+          <?php if (($me['role_id'] ?? -1) != 6): ?>
+            <th style="width:80px" class="text-center">Opsi</th>
+          <?php endif; ?>
         </tr>
       </thead>
       <tbody>
@@ -29,6 +31,7 @@ function qurl_part($p=[]){ return current_url().'?'.http_build_query(array_merge
           <td class="col-vignette"><div class="clamp-3"><?= esc(strip_tags($r['vignette'] ?? '')) ?></div></td>
           <td class="col-tanya"><div class="clamp-2"><?= esc(strip_tags($r['pertanyaan'] ?? '')) ?></div></td>
           <td class="col-status"><?= $badge ?></td>
+          <?php if (($me['role_id'] ?? -1) != 6): ?>
           <td class="text-center">
             <div class="dropdown">
               <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" 
@@ -58,6 +61,7 @@ function qurl_part($p=[]){ return current_url().'?'.http_build_query(array_merge
               </ul>
             </div>
           </td>
+          <?php endif; ?>
         </tr>
       <?php endforeach; endif; ?>
       </tbody>

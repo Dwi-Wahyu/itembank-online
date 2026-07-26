@@ -13,7 +13,9 @@ function qp($p=[]){ return current_url().'?'.http_build_query(array_merge($_GET,
           <th style="width:120px">Instruksi</th>
           <th style="width:110px">Jlh. Aspek</th>
           <th style="width:120px">Status</th>
-          <th style="width:80px" class="text-center">Opsi</th>
+          <?php if (($me['role_id'] ?? -1) != 6): ?>
+            <th style="width:80px" class="text-center">Opsi</th>
+          <?php endif; ?>
         </tr>
       </thead>
       <tbody>
@@ -44,6 +46,7 @@ function qp($p=[]){ return current_url().'?'.http_build_query(array_merge($_GET,
             </a>
           </td>
           <td><span class="badge bg-<?= $r['status_label']==='publish'?'success':($r['status_label']==='review'?'info':($r['status_label']==='reject'?'danger':'secondary')) ?>"><?= strtoupper($r['status_label'] ?: 'draft') ?></span></td>
+          <?php if (($me['role_id'] ?? -1) != 6): ?>
           <td class="text-center">
             <div class="dropdown">
               <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" 
@@ -75,6 +78,7 @@ function qp($p=[]){ return current_url().'?'.http_build_query(array_merge($_GET,
               </ul>
             </div>
           </td>
+          <?php endif; ?>
         </tr>
       <?php endforeach; endif; ?>
       </tbody>

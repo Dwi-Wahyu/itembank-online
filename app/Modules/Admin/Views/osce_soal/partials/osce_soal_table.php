@@ -33,6 +33,7 @@ function qp($p=[]){ return current_url().'?'.http_build_query(array_merge($_GET,
               title="Detail">
               <i class="bi bi-eye"></i>
             </a>
+            <?php if (($me['role_id'] ?? -1) != 6): ?>
             <button class="btn btn-outline-primary btn-edit" data-id="<?= $r['id'] ?>" title="Edit">
               <i class="bi bi-pencil-square"></i>
             </button>
@@ -40,6 +41,7 @@ function qp($p=[]){ return current_url().'?'.http_build_query(array_merge($_GET,
             data-url="<?= site_url('admin/osce-soal/delete/'.$r['id']) ?>" title="Hapus">
             <i class="bi bi-trash"></i>
           </button>
+          <?php endif; ?>
         </div>
       </td>
       <td class="text-wrap"><?= esc($r['kode'] ?? ('#'.$r['osce_id'])) ?></td>

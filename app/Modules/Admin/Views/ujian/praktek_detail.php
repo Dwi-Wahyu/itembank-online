@@ -64,9 +64,11 @@ $station_id=(int)$uji['id']
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <strong>Daftar Station</strong>
+            <?php if (($me['role_id'] ?? -1) != 6): ?>
             <button id="btnTambahStation" class="btn btn-sm btn-primary">
               <i class="bi bi-plus-circle me-1"></i> Tambah Station
             </button>
+            <?php endif; ?>
           </div>
           <div class="card-body p-0" id="wrapStation">
             <!-- diisi ajax -->

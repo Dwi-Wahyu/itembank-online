@@ -124,14 +124,21 @@
       <div class="modal-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="small text-muted">Klik Hapus untuk menghapus baris.</div>
+          <?php if (($me['role_id'] ?? -1) != 6): ?>
           <a id="btnTambahOsce" class="btn btn-primary btn-sm" href="#" target="_self">
             <i class="bi bi-plus-circle me-1"></i> Tambah Data
           </a>
+          <?php endif; ?>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle" id="tblOsce">
             <thead class="table-light">
-              <tr><th style="width:72px">Aksi</th><th>Aspek</th><th>Keterangan</th></tr>
+              <tr>
+                <?php if (($me['role_id'] ?? -1) != 6): ?>
+                <th style="width:72px">Aksi</th>
+                <?php endif; ?>
+                <th>Aspek</th><th>Keterangan</th>
+              </tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -297,6 +304,7 @@
       const delUrl  = x.delete_url || '<?= base_url('admin/aspek/delete') ?>'; // fallback
       const tr = document.createElement('tr');
       tr.innerHTML = `
+      <?php if (($me['role_id'] ?? -1) != 6): ?>
       <td>
       <div class="btn-group btn-group-sm">
       <a href="${editUrl}" class="btn btn-outline-primary" title="Edit"><i class="bi bi-pencil-square"></i></a>
@@ -307,6 +315,7 @@
       title="Hapus"><i class="bi bi-trash"></i></button>
       </div>
       </td>
+      <?php endif; ?>
       <td>${x.aspek ?? ''}</td>
       <td class="text-wrap"><div class="clamp-2">${x.keterangan ?? ''}</div></td>
       `;

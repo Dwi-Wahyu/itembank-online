@@ -114,8 +114,38 @@ class SyncController extends ResourceController
         if (empty($results)) return $this->fail('No results provided');
 
         $this->db->transStart();
-        // jawaban_osce stores per-station scoring per student
-        $this->db->table('jawaban_osce')->upsertBatch($results);
+        foreach ($results as $row) {
+            unset($row['id']);
+            unset($row['synced_at']);
+            
+            $aspek = $row['aspek'] ?? [];
+            unset($row['aspek']);
+            
+            $existing = $this->db->table('jawaban_osce')
+                ->where([
+                    'osce_id' => $row['osce_id'],
+                    'soal_id' => $row['soal_id'],
+                    'mahasiswa_id' => $row['mahasiswa_id']
+                ])
+                ->get()->getRow();
+                
+            if ($existing) {
+                $this->db->table('jawaban_osce')->where('id', $existing->id)->update($row);
+                $master_id = $existing->id;
+            } else {
+                $this->db->table('jawaban_osce')->insert($row);
+                $master_id = $this->db->insertID();
+            }
+
+            if (!empty($aspek)) {
+                foreach ($aspek as &$a) {
+                    unset($a['id']);
+                    $a['jawaban_osce_id'] = $master_id;
+                }
+                $this->db->table('jawaban_osce_aspek')->where('jawaban_osce_id', $master_id)->delete();
+                $this->db->table('jawaban_osce_aspek')->insertBatch($aspek);
+            }
+        }
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
@@ -152,9 +182,25 @@ class SyncController extends ResourceController
             return $this->fail('No attempts provided');
         }
 
-        // Insert or update results back into the master database
         $this->db->transStart();
-        $this->db->table('ujian_attempt')->upsertBatch($attempts);
+        foreach ($attempts as $row) {
+            unset($row['id']);
+            unset($row['synced_at']);
+            
+            $existing = $this->db->table('ujian_attempt')
+                ->where([
+                    'kode' => $row['kode'],
+                    'id_mahasiswa' => $row['id_mahasiswa'],
+                    'id_paket' => $row['id_paket']
+                ])
+                ->get()->getRow();
+                
+            if ($existing) {
+                $this->db->table('ujian_attempt')->where('id', $existing->id)->update($row);
+            } else {
+                $this->db->table('ujian_attempt')->insert($row);
+            }
+        }
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {

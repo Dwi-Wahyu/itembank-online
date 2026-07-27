@@ -114,6 +114,7 @@ public function before(RequestInterface $request, $arguments = null)
             'admin/osce-soal',
             'admin/praktek/aspek',
             'admin/aspek',
+            'admin/osce',
         ];
 
         $isAllowed = false;

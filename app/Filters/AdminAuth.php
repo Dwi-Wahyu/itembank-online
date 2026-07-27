@@ -93,10 +93,6 @@ public function before(RequestInterface $request, $arguments = null)
             'admin/aspek/edit',
             'admin/aspek/update',
             'admin/aspek/delete',
-            'admin/osce-soal/create',
-            'admin/osce-soal/update',
-            'admin/osce-soal/delete',
-            'admin/osce-soal/delete-multiple',
             'admin/master',          // master data & manajemen pengguna lain
         ];
         foreach ($deniedOperatorPatterns as $p) {

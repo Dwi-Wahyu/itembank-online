@@ -64,14 +64,19 @@ abstract class UsersBaseController extends BaseController
     {
         $id = (int)($this->request->getPost('id') ?? 0);
 
+        $blok       = $this->request->getPost('blok');
+        $departemen = $this->request->getPost('departemen');
+        $kordinator = $this->request->getPost('kordinator');
+        $email      = trim((string)$this->request->getPost('email'));
+
         $data = [
             'name'       => trim((string)$this->request->getPost('name')),
             'username'   => trim((string)$this->request->getPost('username')),
-            'email'      => trim((string)$this->request->getPost('email')),
-            'blok'       => (string)$this->request->getPost('blok'),
-            'departemen' => (string)$this->request->getPost('departemen'),
+            'email'      => ($email !== '') ? $email : null,
+            'blok'       => ($blok !== null && $blok !== '') ? (int)$blok : 0,
+            'departemen' => ($departemen !== null && $departemen !== '') ? (int)$departemen : 0,
             'old'        => (int)($this->request->getPost('old') ?? 0),
-            'kordinator' => (string)$this->request->getPost('kordinator'),
+            'kordinator' => ($kordinator !== null && $kordinator !== '') ? (int)$kordinator : 0,
             'updated_at' => date('Y-m-d H:i:s'),
         ];
 

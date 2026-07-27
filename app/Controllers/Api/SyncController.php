@@ -110,10 +110,43 @@ class SyncController extends ResourceController
 
         $payload  = $this->request->getJSON(true);
         $results  = $payload['results'] ?? [];
+        $participants = $payload['participants'] ?? [];
+        $stations = $payload['stations'] ?? [];
 
-        if (empty($results)) return $this->fail('No results provided');
+        if (empty($results) && empty($participants) && empty($stations)) {
+            return $this->fail('No results, participants, or stations provided');
+        }
 
         $this->db->transStart();
+
+        if (!empty($stations)) {
+            foreach ($stations as $s) {
+                unset($s['id']);
+                $existing = $this->db->table('osce_soal')
+                    ->where(['osce_id' => $s['osce_id'], 'soal_id' => $s['soal_id']])
+                    ->get()->getRow();
+                if ($existing) {
+                    $this->db->table('osce_soal')->where('id', $existing->id)->update($s);
+                } else {
+                    $this->db->table('osce_soal')->insert($s);
+                }
+            }
+        }
+
+        if (!empty($participants)) {
+            foreach ($participants as $p) {
+                unset($p['id']);
+                $existing = $this->db->table('admin_cbt')
+                    ->where(['kode' => $p['kode'], 'id_mahasiswa' => $p['id_mahasiswa']])
+                    ->get()->getRow();
+                if ($existing) {
+                    $this->db->table('admin_cbt')->where('id', $existing->id)->update($p);
+                } else {
+                    $this->db->table('admin_cbt')->insert($p);
+                }
+            }
+        }
+
         foreach ($results as $row) {
             unset($row['id']);
             unset($row['synced_at']);
@@ -177,12 +210,28 @@ class SyncController extends ResourceController
 
         $payload = $this->request->getJSON(true);
         $attempts = $payload['attempts'] ?? [];
+        $participants = $payload['participants'] ?? [];
 
-        if (empty($attempts)) {
-            return $this->fail('No attempts provided');
+        if (empty($attempts) && empty($participants)) {
+            return $this->fail('No attempts or participants provided');
         }
 
         $this->db->transStart();
+
+        if (!empty($participants)) {
+            foreach ($participants as $p) {
+                unset($p['id']);
+                $existing = $this->db->table('admin_cbt')
+                    ->where(['kode' => $p['kode'], 'id_mahasiswa' => $p['id_mahasiswa']])
+                    ->get()->getRow();
+                if ($existing) {
+                    $this->db->table('admin_cbt')->where('id', $existing->id)->update($p);
+                } else {
+                    $this->db->table('admin_cbt')->insert($p);
+                }
+            }
+        }
+
         foreach ($attempts as $row) {
             unset($row['id']);
             unset($row['synced_at']);

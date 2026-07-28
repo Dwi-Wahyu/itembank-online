@@ -545,6 +545,7 @@ const nilaiInit  = <?= json_encode($nilaiInit ?? [], JSON_UNESCAPED_UNICODE) ?>;
 const savedTime  = <?= json_encode($savedTime ?? '00:00:00') ?>;
 const items      = <?= json_encode($items, JSON_UNESCAPED_UNICODE) ?>;
 const gpsInit   = <?= json_encode($gpsInit ?? null) ?>;
+const ketInit   = <?= json_encode($ketInit ?? '') ?>;
 const GPS_OPTIONS = [
   {v:0, t:'Tidak Lulus'},
   {v:1, t:'Borderline'},
@@ -553,6 +554,7 @@ const GPS_OPTIONS = [
 
 
 let gps   = (gpsInit === null ? null : Number(gpsInit)); // <— nilai GPS awal     // 0/1/2 atau null
+let keterangan = ketInit || '';
 
 /* <- gunakan null coalescing supaya aman */
 const mediaSoal  = <?= json_encode($mediaSoal ?? [], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) ?>;
@@ -651,6 +653,20 @@ function renderPage(){
       lab.append(inp, mark, txt);
       box.appendChild(lab);
     });
+
+    const ketWrap = document.createElement('div');
+    ketWrap.style.marginTop = '16px';
+    const taVal = (typeof keterangan === 'string') ? keterangan : '';
+    ketWrap.innerHTML = `
+      <div style="font-weight:700;margin-bottom:6px;color:#111827;">Keterangan / Catatan Performa Mahasiswa:</div>
+      <textarea id="exKeterangan" rows="3" placeholder="Masukkan deskripsi performa mahasiswa..." style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:0.9rem;" ${READ_ONLY ? 'disabled' : ''}>${decodeEntities(taVal)}</textarea>
+    `;
+    box.appendChild(ketWrap);
+
+    if (!READ_ONLY) {
+      const ta = ketWrap.querySelector('#exKeterangan');
+      ta.addEventListener('input', () => { keterangan = ta.value; });
+    }
 
     // tombol
     qs('#exPrev').disabled = (items.length === 0); // masih bisa kembali ke aspek
@@ -804,6 +820,10 @@ async function submitExam(){
   if (gps !== null && !isNaN(gps)) {
     fd.append('gps', gps);
   }
+
+  // Keterangan performa
+  const currentKet = $('#exKeterangan').val() !== undefined ? $('#exKeterangan').val() : (keterangan || '');
+  fd.append('keterangan', currentKet);
 
   // CSRF
   const csrfSel = (window.CSS && CSS.escape)

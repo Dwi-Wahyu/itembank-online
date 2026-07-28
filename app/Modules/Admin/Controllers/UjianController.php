@@ -53,10 +53,11 @@ class UjianController extends BaseController
     public function teori()
     {
         $r     = $this->request;
-        $tab   = $r->getGet('tab') ?: 'berlangsung';     // review|mendatang|berlangsung|selesai
+        $tab   = $r->getGet('tab') ?: 'mendatang';     // review|mendatang|selesai
         $page  = max(1, (int)$r->getGet('page'));
         $per   = 20;
-        $today = date('Y-m-d');
+        $today    = date('Y-m-d');
+        $nextWeek = date('Y-m-d', strtotime('+7 days'));
 
         // filters
         $q       = trim((string)$r->getGet('q'));           // nama ujian
@@ -76,7 +77,8 @@ class UjianController extends BaseController
         // === scope berdasarkan tab ===
         switch ($tab) {
             case 'mendatang':
-                $b->where('u.tanggal >', $today);
+                $b->where('u.tanggal >=', $today)
+                  ->where('u.tanggal <=', $nextWeek);
                 break;
             case 'berlangsung':
                 $b->where('u.tanggal =', $today);
@@ -466,10 +468,11 @@ public function teoriUpdate($id)
 public function praktek()
 {
     $r     = $this->request;
-    $tab   = $r->getGet('tab') ?: 'berlangsung';     // review|mendatang|berlangsung|selesai
+    $tab   = $r->getGet('tab') ?: 'mendatang';     // review|mendatang|selesai
     $page  = max(1, (int)$r->getGet('page'));
     $per   = 20;
-    $today = date('Y-m-d');
+    $today    = date('Y-m-d');
+    $nextWeek = date('Y-m-d', strtotime('+7 days'));
 
     // filters
     $q       = trim((string)$r->getGet('q'));          // nama ujian (nama_ujian)
@@ -487,7 +490,7 @@ public function praktek()
 
     // scope tab (berdasarkan tanggal)
     switch ($tab) {
-        case 'mendatang':    $b->where('u.tanggal >', $today); break;
+        case 'mendatang':    $b->where('u.tanggal >=', $today)->where('u.tanggal <=', $nextWeek); break;
         case 'berlangsung':  $b->where('u.tanggal =', $today); break;
         case 'selesai':      $b->where('u.tanggal <', $today); break;
         default: /* review */ /* tidak ada kolom status/review di osce -> tidak difilter khusus */ break;
@@ -614,17 +617,21 @@ public function praktekUpdate($id)
     $rawTgl  = (string) $this->request->getPost('tanggal');
     $tanggal = $rawTgl ? date('Y-m-d', strtotime(str_replace('/','-',$rawTgl))) : null;
 
+    $nama = $this->request->getPost('nama_ujian') !== null && $this->request->getPost('nama_ujian') !== ''
+        ? $this->request->getPost('nama_ujian')
+        : $this->request->getPost('nama');
+    $dep  = $this->request->getPost('departemen_id') ?: $this->request->getPost('dapertemen_id');
+
     $data = [
         'kode'          => strtoupper(trim((string)$this->request->getPost('kode'))),
-        'nama_ujian'    => trim((string)$this->request->getPost('nama_ujian')),
-        'departemen_id' => $this->request->getPost('departemen_id') ?: null,
+        'nama_ujian'    => trim((string)$nama),
+        'departemen_id' => $dep ?: null,
         'blok'          => $this->request->getPost('blok') ?: null,
         'tanggal'       => $tanggal,
         'updated_at'    => date('Y-m-d H:i:s'),
     ];
 
-    
-    if ($this->request->getPost('nama')==='' || empty($tanggal)) {
+    if (empty($data['nama_ujian']) || empty($tanggal)) {
         return $this->response->setStatusCode(422)
             ->setJSON(['status'=>'error','message'=>'Nama & tanggal wajib diisi.']);
     }
@@ -871,7 +878,8 @@ public function pesertaAdd(string $kode, int $mahasiswaId)
     {
         $blokId = $this->request->getGet('blok_id');
         $tab    = $this->request->getGet('tab') ?: 'review';
-        $today  = date('Y-m-d');
+        $today    = date('Y-m-d');
+        $nextWeek = date('Y-m-d', strtotime('+7 days'));
 
         $b = $this->db->table('ujian_teori u')
             ->select('u.nama_ujian,u.tanggal,u.waktu_mulai,u.waktu_selesai,
@@ -882,7 +890,7 @@ public function pesertaAdd(string $kode, int $mahasiswaId)
         if ($blokId) $b->where('u.blok_id', (int)$blokId);
 
         switch ($tab) {
-            case 'mendatang':   $b->where('u.tanggal >', $today); break;
+            case 'mendatang':   $b->where('u.tanggal >=', $today)->where('u.tanggal <=', $nextWeek); break;
             case 'berlangsung': $b->where('u.tanggal =', $today); break;
             case 'selesai':     $b->where('u.tanggal <', $today); break;
             default:            $b->where('u.review_acc', 0);     break;

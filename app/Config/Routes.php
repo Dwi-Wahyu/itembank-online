@@ -187,6 +187,7 @@ $routes->post('soal/teori/import/upload',   'SoalTeoriController::importUpload')
     $routes->post('osce-soal/update/(:num)',  'OsceSoal::update/$1');      // simpan edit
     $routes->post('osce-soal/delete/(:num)',  'OsceSoal::delete/$1');      // hapus
     $routes->get('osce-soal/detail/(:num)', 'OsceSoal::detail/$1');
+    $routes->get('osce-soal/export-pdf/(:num)', 'OsceSoal::exportStationPdf/$1');
     $routes->get('osce-soal/history-mahasiswa/(:num)', 'OsceSoal::historyMahasiswa/$1');
     $routes->post('osce-soal/delete-multiple', 'OsceSoal::deleteMultiple');
     // Select2 options

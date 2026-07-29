@@ -93,12 +93,18 @@ class SyncController extends ResourceController
             ->where('osce_id', $session['id'])
             ->get()->getResultArray();
 
+        $soalIds = array_filter(array_column($stations, 'soal_id'));
+        $soalPraktekList = !empty($soalIds) ? $this->db->table('ujian_praktek')->whereIn('id', $soalIds)->get()->getResultArray() : [];
+        $aspekList = !empty($soalIds) ? $this->db->table('aspek')->whereIn('soal_id', $soalIds)->orderBy('id', 'ASC')->get()->getResultArray() : [];
+
         return $this->respond([
             'status' => 'success',
             'data'   => [
                 'session'      => $session,
                 'participants' => $participants,
                 'stations'     => $stations,
+                'soal_praktek' => $soalPraktekList,
+                'aspek'        => $aspekList,
             ]
         ]);
     }

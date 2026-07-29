@@ -54,16 +54,17 @@ function qp($p=[]){ return current_url().'?'.http_build_query(array_merge($_GET,
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <?php $qs = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''; ?>
                 <?php if (($me['role_id'] ?? -1) != 6): ?>
                   <li>
-                    <a class="dropdown-item" title="Review" href="<?= site_url('admin/soal/praktek/review/'.$r['id']) ?>">
+                    <a class="dropdown-item" title="Review" href="<?= site_url('admin/soal/praktek/review/'.$r['id']) . esc($qs) ?>">
                       <i class="bi bi-clipboard-check me-2"></i> Review
                     </a>
                   </li>
                 <?php endif; ?>
                 <?php if ($me['role_id']==0 || $me['role_id']==1): ?>
                   <li>
-                    <a class="dropdown-item" title="Edit" href="<?= site_url('admin/soal/praktek/edit/'.$r['id']) ?>">
+                    <a class="dropdown-item" title="Edit" href="<?= site_url('admin/soal/praktek/edit/'.$r['id']) . esc($qs) ?>">
                       <i class="bi bi-pencil-square me-2"></i> Ubah
                     </a>
                   </li>

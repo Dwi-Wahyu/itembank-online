@@ -175,8 +175,8 @@ $routes->post('soal/teori/import/upload',   'SoalTeoriController::importUpload')
     $routes->post('aspek/create',     'Aspek::create');         // simpan tambah
     $routes->get('aspek/edit/(:num)', 'Aspek::edit/$1');        // form edit
     $routes->post('aspek/update/(:num)','Aspek::update/$1');    // simpan edit
-   // hapus (AJAX)
-    // opsional: ambil detail json
+    $routes->post('aspek/delete',     'Aspek::delete');
+    $routes->post('aspek/delete/(:num)', 'Aspek::delete/$1');
     $routes->get('aspek/get/(:num)',  'Aspek::get/$1');
 
 

@@ -12,6 +12,9 @@ $station_id=(int)$uji['id']
     </ol>
   </nav>
   <div>
+    <a href="<?= site_url('admin/ujian/praktek/export-pdf/' . $uji['id']) ?>" class="btn btn-danger btn-sm" target="_blank">
+      <i class="bi bi-file-earmark-pdf me-1"></i> Export Hasil Ujian (PDF)
+    </a>
     <a href="<?= site_url('admin/ujian/praktek/export-offline/' . $uji['id']) ?>" class="btn btn-warning btn-sm">
       <i class="bi bi-download me-1"></i> Export Offline (ZIP)
     </a>
@@ -19,13 +22,17 @@ $station_id=(int)$uji['id']
 </div>
 
 <div class="card mb-3">
-  <div class="card-body p-0">
-    <table class="table table-sm mb-0">
-      <tr><th class="w-25">Departemen</th><td class="text-end"><?= esc($dep) ?></td></tr>
-      <tr><th>Blok</th><td class="text-end"><?= esc($blok) ?></td></tr>
-      <tr><th>Tanggal</th><td class="text-end"><?= tgl_id($uji['tanggal']) ?></td></tr>
-      <tr><th>Jlh. Peserta</th><td class="text-end" id="jmlPeserta"><?= (int)$jumlah ?></td></tr>
-    </table>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <tbody>
+          <tr><th class="w-25 text-muted">Departemen</th><td class="text-end fw-semibold"><?= esc($dep) ?></td></tr>
+          <tr><th class="text-muted">Blok</th><td class="text-end fw-semibold"><?= esc($blok) ?></td></tr>
+          <tr><th class="text-muted">Tanggal</th><td class="text-end fw-semibold"><?= tgl_id($uji['tanggal']) ?></td></tr>
+          <tr><th class="text-muted">Jlh. Peserta</th><td class="text-end fw-semibold" id="jmlPeserta"><?= (int)$jumlah ?></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

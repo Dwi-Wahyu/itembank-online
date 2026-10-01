@@ -36,29 +36,41 @@ $min = (int)($uji['nilai_minimum'] ?? $uji['nilai_minimum'] ?? 0);
       <li class="breadcrumb-item active" aria-current="page"><?= esc($uji['nama'])." - ".esc($uji['kode']) ?></li>
     </ol>
   </nav>
-  <div>
+  <div class="d-flex flex-wrap gap-2">
+    <a href="<?= site_url('admin/ujian/teori/analisis/' . $uji['id']) ?>" class="btn btn-primary btn-sm px-3">
+      <i class="bi bi-bar-chart-line-fill me-1"></i> Analisis Ujian
+    </a>
+    <a href="<?= site_url('admin/ujian/teori/laporan/' . rawurlencode($uji['kode'])) ?>" target="_blank" class="btn btn-outline-secondary btn-sm px-3">
+      <i class="bi bi-file-earmark-pdf me-1"></i> Cetak Laporan
+    </a>
     <a href="<?= site_url('admin/ujian/teori/export-offline/' . $uji['id']) ?>" class="btn btn-warning btn-sm">
       <i class="bi bi-download me-1"></i> Export Offline (ZIP)
     </a>
   </div>
 </div>
 
-<div class="card mb-3">
-  <div class="card-body p-0">
-    <table class="table table-sm mb-0">
-      <tr><th class="w-25">Departemen</th><td class="text-end"><?= esc($dep) ?></td></tr>
-      <tr><th>Blok</th><td class="text-end"><?= esc($blok) ?></td></tr>
-      <tr><th>Tanggal</th><td class="text-end"><?= tgl_id($uji['tanggal']) ?></td></tr>
-      <tr><th>Waktu</th><td class="text-end">
-        <?= $uji['mulai'] ? substr($uji['mulai'],0,5) : '-' ?> s.d <?= $uji['selesai'] ? substr($uji['selesai'],0,5) : '-' ?>
-      </td></tr>
-      <tr><th>Jlh. Peserta</th><td class="text-end" id="jmlPeserta"><?= (int)$jumlah ?></td></tr>
-        <tr><th>Passing Grade</th>
-        <td class="text-end">
-          <span class="badge bg-secondary"><?= $min ?></span>
-        </td>
-      </tr>
-    </table>
+<div class="card mb-2 shadow-sm">
+  <div class="card-body p-2">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-6 border-end">
+        <table class="table table-sm table-borderless mb-0">
+          <tbody>
+            <tr><th class="ps-2 py-1 text-muted" style="width: 38%;">Departemen</th><td class="pe-2 py-1 fw-semibold"><?= esc($dep) ?></td></tr>
+            <tr><th class="ps-2 py-1 text-muted">Blok</th><td class="pe-2 py-1 fw-semibold"><?= esc($blok) ?></td></tr>
+            <tr><th class="ps-2 py-1 text-muted">Tanggal</th><td class="pe-2 py-1"><?= tgl_id($uji['tanggal']) ?></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <table class="table table-sm table-borderless mb-0">
+          <tbody>
+            <tr><th class="ps-2 py-1 text-muted" style="width: 38%;">Waktu</th><td class="pe-2 py-1"><?= $uji['mulai'] ? substr($uji['mulai'],0,5) : '-' ?> s.d <?= $uji['selesai'] ? substr($uji['selesai'],0,5) : '-' ?></td></tr>
+            <tr><th class="ps-2 py-1 text-muted">Jlh. Peserta</th><td class="pe-2 py-1" id="jmlPeserta"><span class="badge bg-light text-dark border"><?= (int)$jumlah ?> Peserta</span></td></tr>
+            <tr><th class="ps-2 py-1 text-muted">Passing Grade</th><td class="pe-2 py-1"><span class="badge bg-secondary"><?= $min ?></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
